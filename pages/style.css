@@ -1,0 +1,134 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #d9d7c3;
+}
+header {
+    background-color: #ffffff;
+    color: #333333;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #333333;
+}
+button {
+    background-color: #d9d7c3;
+    color: #333333;
+    border: 2px solid #333333;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 15px;
+}
+.post {
+    background-color: #ffffff;
+    color: #333333;
+    padding: 20px;
+    margin: 20px auto;
+    width: 50%;
+    min-height: 50px;
+    border-radius: 10px;
+    border: 2px solid #333333;
+    text-wrap: break-word;
+}
+.post-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+.post-author {
+    font-weight: bold;
+    font-size: 14px;
+}
+.post-date {
+    font-size: 10px;
+    color: #777777;
+}
+.post-header {
+    display: flex;
+    flex-direction: column;
+}
+nav{
+    background-color: #d9d7c3;
+    color: #333333;
+    padding: 10px;
+    text-align: center;
+    position: sticky;
+    border-bottom: #333333 2px solid;
+}
+.post-form {
+    background-color: #ffffff;
+    color: #333333;
+    padding: 20px;
+    margin: 20px auto;
+    width: 50%;
+    border-radius: 10px;
+    border: 2px solid #333333;
+    flex-direction: column;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+textarea{
+    width: 50%;
+    height: 20px;
+    padding: 10px;
+    border: 2px solid #333333;
+    border-radius: 5px;
+    font-size: 16px;
+    resize: none;
+}
+.text-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    height: 200px;
+    resize: vertical;
+}
+.info {
+    background-color: #ffffff;
+    color: #333333;
+    padding: 20px;
+    margin: 20px auto;
+    width: 50%;
+    border-radius: 10px;
+    border: 2px solid #333333;
+    text-align: center;
+}
+nav button {
+    background-color: #ffffff;
+    color: #333333;
+    border: 2px solid #333333;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 15px;
+}
+.small-button {
+    background-color: #d9d7c3;
+    color: #333333;
+    border: 2px solid #333333;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 10px;
+    border-radius: 7.5px;
+}
+.option {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px auto;
+    width: 75%;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 0 0 20px 20px;
+    border: 2px solid #333333;
+    border-top: none;
+    margin-top: -2px;
+}
+
+.highlighted {
+    border: 5px solid;
+}

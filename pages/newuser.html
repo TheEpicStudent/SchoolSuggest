@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+     <nav>
+        <button>Home</button>
+        <button onclick="window.location.href='/submit'" id="submitpost">Submit Post</button>
+    </nav>
+    <header>
+        <h1>Register</h1>
+    </header>
+    <div class="post">
+        <textarea placeholder="Username" id="username"></textarea>
+        <textarea placeholder="Real Name" id="realname"></textarea>
+        <sub>This is needed since <span class="school-name">your school</span> has enabled it.</sub>
+        <button id="registerbtn">Register</button>
+        <sub id="authID"></sub>
+    </div>
+    <script>
+        document.getElementById('registerbtn').addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const realname = document.getElementById('realname').value;
+            var email = window.location.search.split('email=')[1];
+            fetch('/newuser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `email=${decodeURIComponent(email)}&username=${encodeURIComponent(username)}&realname=${encodeURIComponent(realname)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    console.error('Error registering user');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

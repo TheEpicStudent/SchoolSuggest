@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a post</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+     <nav>
+        <button onclick="window.location.href='/'">Home</button>
+    </nav>
+    <header>
+        <h1>Submit a post</h1>
+        <p>Submit a post, suggestion, or idea for discussion!</p>
+    </header>
+    <div class="post-form">
+    <textarea placeholder="Post title" id="title"></textarea>
+    <textarea placeholder="Post content" id="content" class="text-content"></textarea>
+    <button id="submitbtn">Submit</button>
+    </div>
+    <script>
+
+        function checkAuth() {
+    if (!localStorage.getItem('authToken')) {
+        return false;
+    } else {
+        fetch('/auth/validate?token=' + localStorage.getItem('authToken'))
+            .then(response => response.json())
+            .then(data => {
+                if (!data.valid) {
+                    localStorage.removeItem('authToken');
+                    return false;
+                } else {
+                    return true;
+                }
+            })
+            .catch(err => {
+                console.error('Auth validation failed:', err);
+                localStorage.removeItem('authToken');
+            });
+        return true;
+    }
+}
+        if (!checkAuth()) {
+            window.location.href = '/login';
+        }
+
+        var author = '';
+        fetch('/userinfo?token=' + localStorage.getItem('authToken')).then(response => {
+                return response.json();
+            }).then(data => {
+                author = data.Username;
+            });
+        document.getElementById('submitbtn').addEventListener('click', () => {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `name=${encodeURIComponent(title)}&detail=${encodeURIComponent(content)}&user=${encodeURIComponent(author)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    console.error('Error submitting post');
+                }
+            });
+        });
+        
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header>
+        <h1>Login/Register</h1>
+    </header>
+    <div class="post-form">
+    <textarea placeholder="email@example.com" id="email"></textarea>
+    <button id="email-btn">Send email code</button>
+    <b id="invalid" style="color: red; display: none;">Invalid Code</b>
+    <textarea placeholder="Enter the code sent to your email" id="code" style="display: none;"></textarea>
+    <button id="submit-code-btn" style="display: none;">Login</button>
+    <button class="small-button" onclick="showAdminLogin()">Admin Login</button>
+    <textarea style="display: none;" placeholder="Username" id="usrname"></textarea>
+    <textarea style="display: none;" placeholder="Password" id="pswd"></textarea>
+    <button onclick="AuthLogin()" style="display:none;"id="admin-btn" class="small-button"><b>Log In</button>
+    </div>
+    <script>
+        function showAdminLogin() {
+            document.getElementById('usrname').style.display = 'block'
+            document.getElementById('pswd').style.display = 'block'
+            document.getElementById('admin-btn').style.display = 'block'
+            document.getElementsByClassName('small-button')[0].style.opacity = '0';
+            document.getElementsByClassName('small-button')[0].style.pointerEvents = 'none';
+        }
+        function AuthLogin() {
+            fetch('/admin/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `username=${encodeURIComponent(document.getElementById('usrname').value)}&password=${encodeURIComponent(document.getElementById('pswd').value)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    response.json().then(data => {
+                        localStorage.setItem('authToken', data.token);
+                        window.location.href = data.url;
+                    });
+                }
+            });
+        }
+
+        function SendCode(email) {
+            fetch("/auth/code", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+             body: `email=${encodeURIComponent(email)}`,
+           });
+        }
+
+        async function CheckCode(email, code) {
+            await fetch("/auth/code/return", {
+             method: "POST",
+             headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: `email=${encodeURIComponent(email)}&code=${encodeURIComponent(code.trim())}`,
+            }).then((response) => {
+                if (response.ok) {
+                    console.log(email);
+                    response.json().then((data) => {
+                    localStorage.setItem("authToken", data.token);
+                    fetch('/usrchk', {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `usrmail=${encodeURIComponent(email)}`
+                    }).then(response => response.json()).then(data => {
+                        if (data.exists) {
+                            window.location.href = '/';
+                        } else {
+                            window.location.href = `/newuser?email=${encodeURIComponent(email)}`;
+                        }
+                    });
+                });
+              } else {
+                document.getElementById("invalid").style.display = "block";
+              }
+            });
+        }
+
+        document.getElementById('email-btn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            await SendCode(email);
+            document.getElementById('code').style.display = 'block';
+            document.getElementById('email-btn').style.display = 'none';
+            document.getElementById('email').style.display = 'none';
+            const submitBtn = document.getElementById('submit-code-btn');
+            submitBtn.style.display = 'block';
+            submitBtn.addEventListener('click', async () => {
+                const code = document.getElementById('code').value;
+                await CheckCode(email, code);
+            });
+        });
+    </script>
+</body>
+
+</html>
