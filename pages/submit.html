@@ -20,6 +20,23 @@
     <textarea placeholder="Post content" id="content" class="text-content"></textarea>
     <button id="submitbtn">Submit</button>
     </div>
+    <div class="post">
+        <h1>Read me before posting!</h1>
+        <p>Please make sure you are following our community guidelines, as well as your school's code of conduct.</p>
+        <p>If you break any of the guidelines or your school's code of conduct, your post will be removed and a warn put on your account.</p>
+        <p>Your school has final discretion over any post and its contents.</p>
+        <div class="lazy-horizonal">
+            <button id="guidelines-btn">Our guidelines</button>
+            <button id="coc-btn">Your school's CoC</button>
+        </div>
+    </div>
+    <div id="popup" class="popup" style="display:none;">
+        <h1 id="popuph1">header</h1>
+        <p id="popupdetail">detail</p>
+        <embed id="cocembed" src="" style="display:none;" width="100%" height="400px"></embed>
+        <button onclick="document.getElementById('popup').style.display = 'none';document.getElementById('backdrop').style.display = 'none';">Close</button>
+    </div>
+    <div class="backdrop" id="backdrop"></div>
     <script>
 
         function checkAuth() {
@@ -74,6 +91,28 @@
             });
         });
         
+        document.getElementById('guidelines-btn').addEventListener('click', () => {
+            const popup = document.getElementById('popup');
+            document.getElementById('popuph1').textContent = 'Community Guidelines';
+            const cocEmbed = document.getElementById('cocembed');
+            cocEmbed.style.display = 'none';
+            document.getElementById('popupdetail').textContent = 'Be respectful to others. No hate speech, harassment, or discrimination. No spamming or self-promotion. Keep content relevant to the school community. Violations may result in post removal and account warnings/bans.';
+            popup.style.display = 'block';
+            document.getElementById('backdrop').style.display = 'block';
+        });
+
+        document.getElementById('coc-btn').addEventListener('click', () => {
+            const popup = document.getElementById('popup');
+            const cocEmbed = document.getElementById('cocembed');
+            cocEmbed.src = fetch('/schoolcoc').then(response => response.json()).then(url => {
+                cocEmbed.src = url;
+            });
+            cocEmbed.style.display = 'block';
+            document.getElementById('popuph1').textContent = 'Your school\'s Code of Conduct';
+            document.getElementById('popupdetail').textContent = '';
+            popup.style.display = 'block';
+            document.getElementById('backdrop').style.display = 'block';
+        });
     </script>
 </body>
 

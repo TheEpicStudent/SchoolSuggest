@@ -48,13 +48,25 @@ document.getElementById('mostupvoted').addEventListener('click', () => sortPosts
 document.getElementById('leastupvoted').addEventListener('click', () => sortPosts('leastupvoted'));
 
 // Manual post addition only client side
-function addPost(author, title, content, date, votes, postID) {
+function addPost(author, title, content, date, votes, postID, feed) {
     date = new Date(date).toLocaleDateString();
-    const feed = document.querySelector('.feed');
+    if (feed === undefined) {
+        feed = document.querySelector('.feed');
+        var dwhdu = '';
+    } else if (feed === 'sticky') {
+        feed = document.querySelector('.sticky-feed');
+        var dwhdu = '<b>Sticky Post</b><button class="small-button" style="width: 50px; margin-top: 5px;" onclick="document.querySelector(\'.sticky-feed\').style.display = \'none\'">[HIDE]</button><br>';
+    } else {
+        feed = document.querySelector('.feed');
+        var dwhdu = '';
+    }
     const post = document.createElement('div');
+    votes = votes.toString();
+    votes = votes.replace('.0', '');
     post.className = 'post';
     post.innerHTML = `
             <div class="post-header">
+                ${dwhdu}
                 <span class="post-author">${author}</span>
                 <span class="post-date">${date}</span>
                 <span class="post-date">Post ${postID}</span>
@@ -63,18 +75,49 @@ function addPost(author, title, content, date, votes, postID) {
             <p>${content}</p>
             <br>
             <div class="post-footer">
-                <button onclick="votePost(${postID}, 'up')">^</button>
+                <button onclick="votePost(${postID}, 'up')" id="upvote-${postID}">^</button>
                 <span id="vote-count-${postID}">${votes}</span>
-                <button onclick="votePost(${postID}, 'down')">v</button>
+                <button onclick="votePost(${postID}, 'down')" id="downvote-${postID}">v</button>
+            </div>
+            <div class="post-footer">
+                <button onclick="window.location.href = '/post/${postID}'">View Replies</button>
             </div>
     `;
     feed.appendChild(post);
+    var local = localStorage.getItem(`voted_${postID}`)
+    if (local) {
+        document.getElementById(`${local}vote-${postID}`).className = 'highlighted'
+    }
 }
+
+function stuck() {
+    if (checkAuth() == false) {
+        return;
+    }
+
+    fetch('/stuck')
+        .then(response => response.json())
+        .then(data => {
+                fetch(`/postdata/${data.list[0]}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        addPost(data.post.User, data.post.Name, data.post.Detail, data.post.Date, data.post.Votes, data.post.PostID, 'sticky');
+                    })
+                    .catch(err => {
+                        console.error('Failed to load sticky post data:', err);
+                    }); 
+        })
+        .catch(err => {
+            console.error('Failed to check stuck status:', err);
+        });
+}
+
+stuck();
 
 function votePost(postID, voteType) {
     if (localStorage.getItem(`voted_${postID}`)) {
-        if (localStorage.getItem(`voted_${postID}`) === voteType) {
-            if (voteType === 'up') { var reverse = 'down'; } else { var reverse = 'up'; }
+        if (localStorage.getItem(`voted_${postID}`)) {
+            if (localStorage.getItem(`voted_${postID}`) === 'up') { var reverse = 'down'; } else { var reverse = 'up'; }
             fetch('/vote', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -82,8 +125,10 @@ function votePost(postID, voteType) {
             }).catch(err => {
                 console.error('Failed to remove vote:', err);
             });
-            document.getElementById(`vote-count-${postID}`).innerText = parseInt(document.getElementById(`vote-count-${postID}`).innerText) + (voteType === 'up' ? -1 : 1);
+            document.getElementById(`vote-count-${postID}`).innerText = parseInt(document.getElementById(`vote-count-${postID}`).innerText) + (localStorage.getItem(`voted_${postID}`) === 'up' ? -1 : 1);
             localStorage.removeItem(`voted_${postID}`);
+            document.getElementById(`upvote-${postID}`).className = '';
+            document.getElementById(`downvote-${postID}`).className = '';
             return;
         }
     }
@@ -96,6 +141,7 @@ function votePost(postID, voteType) {
     });
     document.getElementById(`vote-count-${postID}`).innerText = parseInt(document.getElementById(`vote-count-${postID}`).innerText) + (voteType === 'up' ? 1 : -1);
     localStorage.setItem(`voted_${postID}`, voteType);
+    document.getElementById(`${voteType}vote-${postID}`).className = 'highlighted';
 }
 
 function getPosts() {
@@ -148,10 +194,11 @@ if (checkAuth()) {
     document.getElementById('loginbtn').style.display = 'none';
     document.getElementById('submitpost').style.display = 'inline-block';
     document.getElementById('sc').style.display = 'none';
-    document.querySelector('.option')[0].children[0].style.display = 'none';
 } else {
     document.getElementById('loginbtn').style.display = 'inline-block';
     document.getElementById('submitpost').style.display = 'none';
+    document.getElementsByClassName('option')[0].style.display = 'none';
+    document.getElementById('logoutbtn').style.display = 'none';
 }
 
 function addAdvert(author, title, content, picture) {
@@ -189,3 +236,11 @@ loadAdverts().then(adverts => {
         addAdvert(advert.Poster, advert.Title, advert.Detail, advert.ImageURL);
     });
 });
+
+if (window.location.hash === '#popup1') {
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('popuph1').style.display = 'block';
+    document.getElementById('popupdetail').style.display = 'block';
+    document.getElementById('popuph1').innerText = 'Thanks for registering!';
+    document.getElementById('popupdetail').innerText = 'Your account has been created successfully. Please log in to start posting and voting on suggestions.';
+}

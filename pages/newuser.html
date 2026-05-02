@@ -9,18 +9,20 @@
 </head>
 <body>
      <nav>
-        <button>Home</button>
+        <button onclick="window.location.href='/'">Home</button>
         <button onclick="window.location.href='/submit'" id="submitpost">Submit Post</button>
     </nav>
     <header>
         <h1>Register</h1>
     </header>
     <div class="post">
+        <div class="vertical-center">
         <textarea placeholder="Username" id="username"></textarea>
         <textarea placeholder="Real Name" id="realname"></textarea>
         <sub>This is needed since <span class="school-name">your school</span> has enabled it.</sub>
         <button id="registerbtn">Register</button>
         <sub id="authID"></sub>
+        </div>
     </div>
     <script>
         document.getElementById('registerbtn').addEventListener('click', () => {
@@ -36,7 +38,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = '/';
+                    window.location.href = '/#popup1';
                 } else {
                     console.error('Error registering user');
                 }

@@ -11,6 +11,8 @@
     <nav>
         <button>Home</button>
         <button onclick="window.location.href='/submit'" id="submitpost">Submit Post</button>
+        <button onclick="localStorage.removeItem('authToken'); window.location.href='/'" id="logoutbtn">Logout</button>
+
     </nav>
     <header>
         <h1 class="school-name">School Suggest</h1>
@@ -24,6 +26,12 @@
         <button id="mostupvoted" class="highlighted">Most Upvoted</button>
         <button id="leastupvoted">Least Upvoted</button>
     </div>
+    <div id="popup" class="popup" style="display:none;">
+        <h1 id="popuph1">header</h1>
+        <p id="popupdetail">detail</p>
+        <button onclick="window.location.href = '/'">Close</button>
+    </div>
+    <div class="sticky-feed"></div>
     <div class="feed">
     <!--
         <div class="post">
